@@ -1,14 +1,17 @@
-Sistema de Reserva de Veículos
-Este projeto é um sistema web desenvolvido para gerenciar e realizar reservas de veículos corporativos. Ele permite o controle completo dos carros da empresa, facilitando o agendamento, acompanhamento e organização do uso dos veículos pelos colaboradores.
+Este é um sistema desenvolvido para gerenciar e reservar recursos corporativos, permitindo que colaboradores solicitem o uso de veículos e dispositivos eletrônicos (notebooks, tablets e celulares) de forma organizada.
 
-Funcionalidades
-Cadastro e gerenciamento de veículos Registro de usuários Reserva de veículos com controle de datas e horários Visualização das reservas realizadas Edição e cancelamento de reservas Organização por abas (identificação, informações, documentação, etc.) Interface dinâmica com atualização sem recarregar a página
+- Funcionalidades
 
-Tecnologias utilizadas
-Python
-Django
-HTML / CSS
-Bootstrap
-HTMX
-Objetivo
-O sistema tem como objetivo otimizar o uso da frota da empresa, evitando conflitos de agendamento e melhorando a gestão dos veículos.
+*   **Gestão de Frota:** Cadastro e monitoramento de disponibilidade de veículos.
+*   **Gestão de Inventário de TI:** Controle de dispositivos como notebooks, tablets e smartphones.
+*   **Reservas em Tempo Real:** Interface para usuários solicitarem ativos em datas e horários específicos.
+*   **Painel Administrativo:** Visualização detalhada de quem está utilizando cada recurso.
+*   **Filtros de Disponibilidade:** Verificação inteligente para evitar conflitos de horários.
+*   **Interface Adaptável:** Suporte a temas claro e escuro (Light/Dark Mode).
+
+- Tecnologias Utilizadas
+
+*   Linguagem: Python
+*   Framework Web: Django
+*   Banco de Dados: SQLite (Desenvolvimento) / PostgreSQL (Produção)
+*   Front-end:** HTML5, CSS3, JavaScript e Bootstrap
