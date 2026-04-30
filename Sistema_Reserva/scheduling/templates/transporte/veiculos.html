@@ -1,0 +1,210 @@
+{% extends '_base.html' %}
+{% load authenticate_user %}
+{% block content %}
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <h2 class="mb-0">Veículos
+                <button type="button" id="botao-adicionar" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+                    Adicionar um carro
+                </button>
+            </h2>
+            <a class="btn btn-outline-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+        <h3 class="mt-2">Todos os carros</h3>
+
+        <div class="veiculos-grid">
+            {% for veiculo in veiculos %}
+                <div class="card h-100" id="card_{{ veiculo.id }}">
+                    
+                    <div class="row g-0 h-100" style="cursor: pointer;" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#modal_carro"
+                         onclick="abrirModalCarro({{ veiculo.id }})">
+                        <div class="col-12 col-md-4 h-100">
+                            {% if veiculo.foto %}
+                                 <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
+                            {% else %}
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-start h-100" style="min-height: 180px;">
+                                    <span>Sem Imagem</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <div class="card-body pb-5">
+                                <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
+                                <p class="card-text">Placa: {{ veiculo.placa }}</p>
+                                <p class="card-text"><small class="text-body-secondary">Clique para ver mais</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if user|has_group:'Gestores' %}
+                    <div class="position-absolute bottom-0 end-0 mb-2 me-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
+                            <i class="bi bi-pen"></i>
+                        </button>
+                        <form 
+                            hx-post="{% url 'remover_veiculo' veiculo.id %}" 
+                            hx-confirm="Tem certeza que deseja remover esse veículo?" 
+                            hx-target="closest .card" 
+                            hx-swap="outerHTML" 
+                            style="display: inline;"
+                        >
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div> <div class="modal fade" id="modal_editar_{{ veiculo.id }}">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tituloEvento">Editar {{ veiculo.modelo }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form 
+                                    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
+                                    hx-target="#card_{{ veiculo.id }}" 
+                                    hx-swap="outerHTML"
+                                    hx-encoding="multipart/form-data"
+                                    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+                                    class="form-control"
+                                >
+                                    {% csrf_token %}
+                                    <label class="form-label">Modelo</label>
+                                    <input type="text"
+                                            name="modelo"
+                                            value="{{ veiculo.modelo }}"
+                                            class="form-control"
+                                            required>
+                                    
+                                    <label class="form-label">Marca</label>
+                                    <input type="text"
+                                            name="marca"
+                                            value="{{ veiculo.marca }}"
+                                            class="form-control"
+                                            required>
+                                    
+                                    <label class="form-label">Placa</label>
+                                    <input type="text"
+                                            name="placa"
+                                            value="{{ veiculo.placa }}"
+                                            class="form-control"
+                                            required>
+
+                                    <label class="form-label">Foto</label>
+                                    <input type="file" name="foto" class="form-control">
+
+                                    <label class="form-label">Ano</label>
+                                    <input type="number"
+                                            name="ano"
+                                            value="{{ veiculo.ano }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Cor</label>
+                                    <input type="text"
+                                            name="cor"
+                                            value="{{ veiculo.cor }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Chassi</label>
+                                    <input type="text"
+                                            name="chassi"
+                                            value="{{ veiculo.chassi }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Renavam</label>
+                                    <input type="number"
+                                            name="renavam"
+                                            value="{{ veiculo.renavam }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Versão</label>
+                                    <input type="text"
+                                            name="versao"
+                                            value="{{ veiculo.versao }}"
+                                            class="form-control">
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endfor %}
+        </div> 
+        <div class="modal fade" id="modal_carro" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ficha do Veículo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body pb-0">
+                            <!-- Abas de navegação -->
+                            <ul class="nav nav-tabs mb-3" id="abas-veiculo">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">Identificação</button>
+                                </li>
+
+                                <li class="nav-item">
+                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">Seguro</button>
+                                </li>
+
+                                <li class="nav-item">
+                                    <button class="nav-link" data-aba="info" onclick="trocarAba(this)">Info</button>
+                                </li>
+                                
+                                {% if user|has_group:'Gestores' %}
+                                 <li class="nav-item">
+                                    <button class="nav-link" data-aba="comentarios" onclick="trocarAba(this)">Comentários</button>
+                                </li>
+                                {% endif %}
+
+                            </ul>
+
+                            <div id="tab-body">
+                                <div class="text-center p-4">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Carregando dados do banco...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="modal fade" id="modal_insercao">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tituloEvento">Adicionar um carro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" class="form-control" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Confirmar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div> 
+        {% endblock %}
